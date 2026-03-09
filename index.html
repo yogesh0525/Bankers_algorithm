@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Banker's Algorithm Simulator - A tool to visualize and understand the Banker's Algorithm for deadlock avoidance">
+    <title>Banker's Algorithm Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        
+        <!-- Header Section -->
+        <header class="header" role="banner">
+            <div class="header-content">
+                <h1 class="title">🏦 Banker's Algorithm Simulator</h1>
+                <p class="subtitle">Deadlock Avoidance & Safe State Detection</p>
+            </div>
+        </header>
+
+        <!-- Main Content Container -->
+        <main class="container" role="main">
+
+            <!-- System Configuration Section -->
+            <section class="card input-card" aria-labelledby="config-title">
+                <h2 class="card-title" id="config-title">⚙️ System Configuration</h2>
+                <div class="config-inputs">
+                    <div class="input-group">
+                        <label for="processes">Number of Processes</label>
+                        <input type="text" id="processes" name="processes" placeholder="e.g., 5" class="input-field" inputmode="numeric">
+                    </div>
+                    <div class="input-group">
+                        <label for="resources">Number of Resources</label>
+                        <input type="text" id="resources" name="resources" placeholder="e.g., 3" class="input-field" inputmode="numeric">
+                    </div>
+                    <button type="button" class="btn-generate" onclick="createAvailableResourcesInput(); createMatrixInput('allocation'); createMatrixInput('maximum')" aria-label="Generate input matrices">📊 Generate Matrices</button>
+                </div>
+            </section>
+
+            <!-- Available Resources Section -->
+            <section class="card matrix-card" aria-labelledby="available-title">
+                <h2 class="card-title" id="available-title">📦 Available Resources</h2>
+                <p class="card-description">Current available resources in the system</p>
+                <div class="table-wrapper">
+                    <table id="availableResources" class="matrix" aria-label="Available resources table"></table>
+                </div>
+            </section>
+
+            <!-- Allocation Matrix Section -->
+            <section class="card matrix-card" aria-labelledby="allocation-title">
+                <h2 class="card-title" id="allocation-title">📋 Allocation Matrix</h2>
+                <p class="card-description">Current resource allocation for each process</p>
+                <div class="table-wrapper">
+                    <table id="allocationMatrix" class="matrix" aria-label="Allocation matrix"></table>
+                </div>
+            </section>
+
+            <!-- Maximum Requirement Matrix Section -->
+            <section class="card matrix-card" aria-labelledby="maximum-title">
+                <h2 class="card-title" id="maximum-title">🎯 Maximum Requirement Matrix</h2>
+                <p class="card-description">Maximum resources needed by each process</p>
+                <div class="table-wrapper">
+                    <table id="maximumMatrix" class="matrix" aria-label="Maximum requirement matrix"></table>
+                </div>
+            </section>
+
+            <!-- Run Algorithm Section -->
+            <div class="action-section">
+                <button type="button" class="btn-run" onclick="runBankersAlgorithm()" aria-label="Run the Banker's Algorithm">▶ Run Algorithm</button>
+            </div>
+
+            <!-- Need Matrix Display Section -->
+            <section id="needMatrixDiv" class="card result-card" aria-labelledby="need-matrix-title" aria-live="polite">
+                <h2 class="card-title" id="need-matrix-title">📐 Need Matrix</h2>
+                <!-- Need Matrix will be displayed here by JavaScript -->
+            </section>
+
+            <!-- Result Display Section -->
+            <section id="result" class="card result-card" aria-labelledby="result-title" aria-live="assertive">
+                <h2 class="card-title" id="result-title">✨ Algorithm Result</h2>
+                <!-- Algorithm result will be displayed here by JavaScript -->
+            </section>
+
+            <!-- Resource Request Simulation Section -->
+            <section class="card request-card" aria-labelledby="request-title">
+                <h2 class="card-title" id="request-title">🎫 Resource Request Simulation</h2>
+                <p class="card-description">Test resource requests and check if the system remains in a safe state</p>
+                
+                <div class="request-controls">
+                    <div class="input-group">
+                        <label for="requestProcess">Select Process</label>
+                        <select id="requestProcess" class="input-field select-field">
+                            <option value="">-- Select a Process --</option>
+                        </select>
+                    </div>
+
+                    <div id="requestInputsContainer" class="request-inputs-grid">
+                        <!-- Resource input fields will be generated here -->
+                    </div>
+
+                    <button type="button" class="btn-request" onclick="submitResourceRequest()" aria-label="Submit resource request">
+                        📤 Request Resources
+                    </button>
+                </div>
+
+                <!-- Request Result Display -->
+                <div id="requestResult" class="request-result" aria-live="polite">
+                    <!-- Request result will be displayed here -->
+                </div>
+            </section>
+
+            <!-- Request Details Section -->
+            <section id="requestDetailsSection" class="card details-card" style="display: none;" aria-labelledby="details-title">
+                <h2 class="card-title" id="details-title">📊 Request Analysis</h2>
+                
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <h3>Updated Available</h3>
+                        <div id="requestAvailableDisplay" class="detail-content"></div>
+                    </div>
+                    <div class="detail-item">
+                        <h3>Updated Allocation</h3>
+                        <div id="requestAllocationDisplay" class="detail-content"></div>
+                    </div>
+                    <div class="detail-item">
+                        <h3>Updated Need</h3>
+                        <div id="requestNeedDisplay" class="detail-content"></div>
+                    </div>
+                    <div class="detail-item">
+                        <h3>Safe Sequence</h3>
+                        <div id="requestSafeSequenceDisplay" class="detail-content"></div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+    </div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+
+</html>
