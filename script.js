@@ -1,4 +1,107 @@
 
+    // ===== DASHBOARD EXECUTION HELPERS =====
+    let executionSteps = [];
+    let executionSafeSequence = [];
+    let executionIsSafe = false;
+
+    function recordExecutionStep(stepNumber, processId, workBefore, workAfter, allocation) {
+        executionSteps.push({
+            step: stepNumber,
+            process: processId,
+            workBefore: [...workBefore],
+            workAfter: [...workAfter],
+            allocation: [...allocation]
+        });
+    }
+
+    function displayExecutionDashboard(isSafe, safeSequence, initialWork, allocation, maximum) {
+        executionIsSafe = isSafe;
+        executionSafeSequence = safeSequence;
+
+        const dashboard = document.getElementById('executionDashboard');
+        dashboard.style.display = 'block';
+
+        // Update status card
+        const statusDiv = document.getElementById('executionStatus');
+        if (isSafe) {
+            statusDiv.innerHTML = '<div class="status-badge status-safe">✓ SAFE STATE</div>';
+        } else {
+            statusDiv.innerHTML = '<div class="status-badge status-unsafe">✗ UNSAFE STATE</div>';
+        }
+
+        // Update safe sequence card
+        const sequenceDiv = document.getElementById('executionSequence');
+        if (isSafe && safeSequence.length > 0) {
+            let sequenceHTML = '';
+            safeSequence.forEach((processId, index) => {
+                const colorClass = `process-badge-p${processId % 8}`;
+                sequenceHTML += `<span class="process-badge ${colorClass}">P${processId}</span>`;
+                if (index < safeSequence.length - 1) {
+                    sequenceHTML += '<span class="process-arrow">→</span>';
+                }
+            });
+            sequenceDiv.innerHTML = sequenceHTML;
+        } else {
+            sequenceDiv.innerHTML = '<p class="placeholder">No safe sequence available</p>';
+        }
+
+        // Display execution steps
+        displayExecutionSteps();
+    }
+
+    function displayExecutionSteps() {
+        const stepsDiv = document.getElementById('executionSteps');
+        stepsDiv.innerHTML = '';
+
+        if (executionSteps.length === 0) {
+            stepsDiv.innerHTML = '<p class="placeholder">No execution steps recorded</p>';
+            return;
+        }
+
+        executionSteps.forEach(step => {
+            const stepCard = document.createElement('div');
+            stepCard.className = 'execution-step';
+
+            const stepNumber = document.createElement('span');
+            stepNumber.className = 'step-number';
+            stepNumber.textContent = step.step;
+
+            const stepContent = document.createElement('div');
+            stepContent.className = 'step-content';
+
+            const processLine = document.createElement('div');
+            processLine.className = 'step-process';
+            processLine.innerHTML = `<span class="step-process-name">P${step.process}</span> executed`;
+
+            const stepInfo = document.createElement('div');
+            stepInfo.className = 'step-info';
+
+            const workBeforeItem = document.createElement('div');
+            workBeforeItem.className = 'step-info-item';
+            workBeforeItem.innerHTML = `<span class="step-info-label">Work Before:</span><span class="step-info-value">[${step.workBefore.join(', ')}]</span>`;
+
+            const workAfterItem = document.createElement('div');
+            workAfterItem.className = 'step-info-item';
+            workAfterItem.innerHTML = `<span class="step-info-label">Work After:</span><span class="step-info-value">[${step.workAfter.join(', ')}]</span>`;
+
+            const allocationItem = document.createElement('div');
+            allocationItem.className = 'step-info-item';
+            allocationItem.innerHTML = `<span class="step-info-label">Allocation Released:</span><span class="step-info-value">[${step.allocation.join(', ')}]</span>`;
+
+            stepInfo.appendChild(workBeforeItem);
+            stepInfo.appendChild(workAfterItem);
+            stepInfo.appendChild(allocationItem);
+
+            stepContent.appendChild(processLine);
+            stepContent.appendChild(stepInfo);
+
+            stepCard.appendChild(stepNumber);
+            stepCard.appendChild(stepContent);
+
+            stepsDiv.appendChild(stepCard);
+        });
+    }
+
     function createMatrixInput(matrixType) {
         const processes = parseInt(document.getElementById('processes').value);
         const resources = parseInt(document.getElementById('resources').value);
@@ -58,10 +161,16 @@
 			available[i] = parseInt(document.querySelector(`input[name="available[${i}]"]`).value);
 		}
 	
+		// Reset execution tracking
+		executionSteps = [];
+		executionSafeSequence = [];
+		
 		const work = [...available];
+		const initialWork = [...available]; // Store initial work for display
 		const finish = new Array(processes).fill(false);
 		const safeSequence = [];
 		let isSafe = true;
+		let stepCounter = 1;
 	
 		let found;
 		do {
@@ -77,9 +186,18 @@
 					}
 	
 					if (canExecute) {
+						// Record work BEFORE execution
+						const workBefore = [...work];
+						
+						// Execute: add allocation to work
 						for (let j = 0; j < resources; j++) {
 							work[j] += allocation[i][j];
 						}
+						
+						// Record execution step
+						recordExecutionStep(stepCounter, i, workBefore, work, allocation[i]);
+						stepCounter++;
+						
 						finish[i] = true;
 						safeSequence.push(i);
 						found = true;
@@ -103,6 +221,9 @@
 			resultDiv.innerHTML = "No safe sequence exists.<br>System is not safe.";
 		}
 		displayNeedMatrix(allocation, maximum);
+		
+		// Display execution dashboard
+		displayExecutionDashboard(isSafe, safeSequence, initialWork, allocation, maximum);
 	}
 	
     function displayNeedMatrix(allocation, maximum) {
