@@ -15,7 +15,7 @@
 <body>
     <!-- Main Wrapper -->
     <div class="main-wrapper">
-        
+
         <!-- Header Section -->
         <header class="header" role="banner">
             <div class="header-content">
@@ -137,6 +137,41 @@
                         <div id="requestSafeSequenceDisplay" class="detail-content"></div>
                     </div>
                 </div>
+            </section>
+
+            <!-- Program Execution Dashboard Section -->
+            <section id="executionDashboard" class="card execution-dashboard" aria-labelledby="execution-title" style="display: none;">
+                <h2 class="card-title" id="execution-title">🎬 Program Execution</h2>
+                
+                <!-- Dashboard Grid -->
+                <div class="execution-grid">
+                    
+                    <!-- Safe State Status Card -->
+                    <div class="execution-card status-card">
+                        <h3 class="execution-subtitle">Safe State Status</h3>
+                        <div id="executionStatus" class="status-display">
+                            <div class="status-badge status-unknown">⏳ Pending</div>
+                        </div>
+                    </div>
+
+                    <!-- Safe Sequence Card -->
+                    <div class="execution-card sequence-card">
+                        <h3 class="execution-subtitle">Safe Sequence</h3>
+                        <div id="executionSequence" class="sequence-display">
+                            <p class="placeholder">No sequence generated</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Execution Steps Panel -->
+                <div class="execution-steps-wrapper">
+                    <h3 class="execution-subtitle">Execution Steps</h3>
+                    <div id="executionSteps" class="execution-steps-container">
+                        <p class="placeholder">Steps will appear here after algorithm execution</p>
+                    </div>
+                </div>
+
             </section>
 
         </main>
